@@ -19,17 +19,21 @@ function PSelect {
     Param
     (
         # Param1 help description
-        [Parameter(Mandatory=$true,
-                   Position=0)]
+        [Parameter(Mandatory=$true,Position=0)]
         [Scriptblock]
-        $ScriptBlock
+        $ScriptBlock,
+
+        # Parameter help description
+        [Parameter(ValueFromPipeline=$true)]
+        [Object[]]
+        $InputObject
     )
 
     Begin {
         $PSelectParams = @{}
     }
 
-    Process { }
+    Process { FromPipeline -Object $InputObject }
 
     End {
         & $ScriptBlock
@@ -244,7 +248,37 @@ function FromCsv {
     {
         Throw "Only one From statement is supported."
     }
+}
 
+<#
+.Synopsis
+   Short description
+.DESCRIPTION
+   Long description
+.EXAMPLE
+   Example of how to use this cmdlet
+.EXAMPLE
+   Another example of how to use this cmdlet
+#>
+function FromPipeline {
+    [CmdletBinding()]
+    Param
+    (
+        # Param1 help description
+        [Parameter(Mandatory=$true,
+                   Position=0,
+                   ParameterSetName="csv")]
+        [Object[]]
+        $Object
+    )
+
+    If (-not $PSelectParams.ContainsKey("Data")) {
+        $PSelectParams.Add("Data", (New-object Collections.ArrayList))
+    }
+
+    $Object | Foreach-Object {
+        $null = $PSelectParams["Data"].Add($PSItem)
+    }
 }
 
 function SortData {

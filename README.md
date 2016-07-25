@@ -2,6 +2,41 @@
 
 A SQL-ish DSL in PowerShell to assist in aggregating collections of data.
 
+
+### Example - FromPipeline
+
+```powershell
+Get-Process | PSelect {
+    Field ProcessName
+    Field WorkingSet -as Count -Count
+    Field WorkingSet -Sum
+    
+    GroupBy ProcessName
+
+    SortData
+}
+
+ProcessName                           Count WorkingSet
+-----------                           ----- ----------
+ApplicationFrameHost                      1   27492352
+AppVShNotify                              1    7405568
+armsvc                                    1    5464064
+audiodg                                   1   18952192
+BleServicesCtrl                           1    9011200
+bmservice                                 1   46051328
+chrome                                   25 1875648512
+Code                                      7  357859328
+CodeHelper                                1   13967360
+conhost                                   7   38752256
+csrss                                     2   16859136
+dasHost                                   1   10018816
+DataExchangeHost                          1   12623872
+dllhost                                   3   26742784
+...
+```
+
+### Example - FromCsv
+
 ```powershell
 PSelect {
     Field category
