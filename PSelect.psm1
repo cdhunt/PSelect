@@ -42,7 +42,7 @@ function PSelect {
             Group-Object $PSelectParams.GroupBy
 
         If ($PSelectParams.ContainsKey("Sort")) {            
-            $groups = $groups | sort name -Descending:$PSelectParams["Sort"]
+            $groups = $groups | Sort-Object Name -Descending:$PSelectParams["Sort"]
         }
 
         foreach ($group in $groups) {
@@ -182,7 +182,7 @@ function GroupBy {
         # Param1 help description
         [Parameter(Mandatory=$true,
                    Position=0)]
-        [string]
+        [string[]]
         $Name
     )
 
@@ -222,7 +222,7 @@ function FromCsv {
     }
     else
     {
-        Throw "Only one source is supported."
+        Throw "Only one From statement is supported."
     }
 
 }
@@ -239,7 +239,14 @@ function SortData {
 
     If (-not $PSelectParams.ContainsKey("Sort")) {
         $dirDesc=$false
-        if($Descending) {$dirDesc=$true}
+
+        if($Descending) {
+            $dirDesc=$true
+        }
+        
         $PSelectParams.Add("Sort", $dirDesc)
+    }
+    else {
+        Throw "Only one SortData statement is supported."
     }
 }
