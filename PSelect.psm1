@@ -68,6 +68,16 @@ function PSelect {
                         'Sum'     {$value = $aggregates.Sum}
                         'Minimum' {$value = $aggregates.Minimum}
                         'Maximum' {$value = $aggregates.Maximum}
+                        'StdDev' {
+                            $avg = $aggregates.Average
+                            $values = New-Object System.Collections.Generic.List[double]
+                            $null = $group.Group.ForEach({
+                                $f = $field["Name"]
+                                $values.Add($_.$f)
+                            })
+                            $sumOfSquaresOfDifferences = [System.Linq.Enumerable]::Sum([System.Linq.Enumerable]::Select($values, [System.Func[double,double]] {param($val) ($val - $avg) * ($val - $avg)}))
+                            $value = [Math]::Sqrt($sumOfSquaresOfDifferences/$aggregates.Count)
+                        }
                         Default   {$value = $aggregates.Count}
                     }
                 }
@@ -108,17 +118,16 @@ function PSelect {
    Another example of how to use this cmdlet
 #>
 function Field {
-    [CmdletBinding(DefaultParameterSetName="Count")]
+    [CmdletBinding(DefaultParameterSetName="Default")]
     Param
     (
         # Param1 help description
-        [Parameter(Mandatory=$true,
-                   Position=0)]
+        [Parameter(Mandatory,Position=0)]     
         [String]
         $Name,
 
         # Param2 help description
-        [Parameter(Position=1)]
+        [Parameter(Position=1)] 
         [String]
         $As,
 
@@ -132,35 +141,23 @@ function Field {
         [String]
         $Format,
 
-        [Parameter(ParameterSetName="Unit")]
-        [Parameter(ParameterSetName="Format")]
-        [Parameter(ParameterSetName="Average")]
         [Switch]
         $Average,
 
-        [Parameter(ParameterSetName="Unit")]
-        [Parameter(ParameterSetName="Format")]
-        [Parameter(ParameterSetName="Sum")]
         [Switch]
         $Sum,
 
-        [Parameter(ParameterSetName="Unit")]
-        [Parameter(ParameterSetName="Format")]
-        [Parameter(ParameterSetName="Minimum")]
         [Switch]
         $Minimum,
 
-        [Parameter(ParameterSetName="Unit")]
-        [Parameter(ParameterSetName="Format")]
-        [Parameter(ParameterSetName="Maximum")]
         [Switch]
         $Maximum,
 
-        [Parameter(ParameterSetName="Unit")]
-        [Parameter(ParameterSetName="Format")]
-        [Parameter(ParameterSetName="Count")]
         [Switch]
-        $Count
+        $Count,
+
+        [Switch]
+        $StdDev        
     )
 
     Begin {
@@ -178,10 +175,11 @@ function Field {
         if ($PSBoundParameters.ContainsKey("Format")) { $field.Add("Format", $Format) }
 
         if ($Average) { $field.Add("Aggregate", "Average") }
-        if ($Sum)     { $field.Add("Aggregate", "Sum") }
-        if ($Minimum) { $field.Add("Aggregate", "Minimum") }
-        if ($Maximum) { $field.Add("Aggregate", "Maximum") }
-        if ($Count)   { $field.Add("Aggregate", "Count") }
+        elseif ($Sum)     { $field.Add("Aggregate", "Sum") }
+        elseif ($Minimum) { $field.Add("Aggregate", "Minimum") }
+        elseif ($Maximum) { $field.Add("Aggregate", "Maximum") }
+        elseif ($Count)   { $field.Add("Aggregate", "Count") }
+        elseif ($StdDev)  { $field.Add("Aggregate", "StdDev") }
 
         $PSelectParams.Fields.Add($field) | Out-Null
     }
