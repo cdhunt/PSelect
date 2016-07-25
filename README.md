@@ -3,7 +3,7 @@
 A SQL-ish DSL in PowerShell to assist in aggregating collections of data.
 
 ```powershell
-PS C:\Source\GitHub\PSelect> PSelect {
+PS C:\> PSelect {
     Field category
     Field raisedAmt -as AvgRaisedAmt -Average -Unit Currency
     Field raisedAmt -as TotalRaisedAmt -Sum -Unit Currency
@@ -13,7 +13,7 @@ PS C:\Source\GitHub\PSelect> PSelect {
     GroupBy category
     SortData
     FromCsv TechCrunchcontinentalUSA.csv
-} |ft -AutoSize
+} | Format-Table -AutoSize
 
 category   AvgRaisedAmt       TotalRaisedAmt     MaxRaisedAmt       MinRaisedAmt       Rounds
 --------   ------------       --------------     ------------       ------------       ------
