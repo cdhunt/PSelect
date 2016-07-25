@@ -63,17 +63,18 @@ function PSelect {
 
                 if ($field.ContainsKey("Aggregate")) {
 
-                    $aggregates = $group.Group | 
-                        Measure-Object -Property $field["Name"] -Sum -Average -Maximum -Minimum
+                    
+                    #$aggregates = $group.Group | 
+                    #    Measure-Object -Property $field["Name"] -Sum -Average -Maximum -Minimum
 
                     switch ($field["Aggregate"])
                     {
-                        'Average' {$value = $aggregates.Average}
-                        'Sum'     {$value = $aggregates.Sum}
-                        'Minimum' {$value = $aggregates.Minimum}
-                        'Maximum' {$value = $aggregates.Maximum}
+                        'Average' {$value = ($group.Group | Measure-Object -Property $field["Name"] -Average).Average}
+                        'Sum'     {$value = ($group.Group | Measure-Object -Property $field["Name"] -Sum).Sum}
+                        'Minimum' {$value = ($group.Group | Measure-Object -Property $field["Name"] -Minimum).Minimum}
+                        'Maximum' {$value = ($group.Group | Measure-Object -Property $field["Name"] -Maximum).Maximum}
                         'StdDev' {
-                            $avg = $aggregates.Average
+                            $avg = ($group.Group | Measure-Object -Property $field["Name"] -Average).Average
                             $values = New-Object System.Collections.Generic.List[double]
                             $null = $group.Group.ForEach({
                                 $f = $field["Name"]
@@ -82,7 +83,7 @@ function PSelect {
                             $sumOfSquaresOfDifferences = [System.Linq.Enumerable]::Sum([System.Linq.Enumerable]::Select($values, [System.Func[double,double]] {param($val) ($val - $avg) * ($val - $avg)}))
                             $value = [Math]::Sqrt($sumOfSquaresOfDifferences/$aggregates.Count)
                         }
-                        Default   {$value = $aggregates.Count}
+                        Default   {$value = $group.Count}
                     }
                 }
 
