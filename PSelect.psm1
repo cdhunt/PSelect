@@ -33,7 +33,10 @@ function PSelect {
         $PSelectParams = @{}
     }
 
-    Process { FromPipeline -Object $InputObject }
+    Process {
+        if ($PSBoundParameters.ContainsKey('InputObject')) {
+            FromPipeline -Object $InputObject }
+    }
 
     End {
         & $ScriptBlock
