@@ -72,20 +72,26 @@ function PSelect {
                     }
                 }
 
+                # 
                 if ($field.ContainsKey("Unit")) {
                     switch ($field["Unit"]) {
-                        #'Currency'   {$value = $value.ToString("C")}
-                        'Currency'   {
-                            $value = "{0,18:C}" -f $value
+                        'Currency'   {$value = $value.ToString("C")}
+                        #'Currency'   {
+                         #   $value = "{0,18:C}" -f $value
                             #"{0,10:C}" -f 100
-                        }
-                        'Percentage' {$value = $value.ToString("P")}                        
+                        #}
+                        'Percentage' {$value = $value.ToString("P")}
                     }
                 }
 
-                $output | Add-Member -MemberType NoteProperty -Name $propertyName -Value $value
-            }
+                if ($field.ContainsKey("Format")) {
+                    $value = $field["Format"] -f $value
+                }
 
+                $output | Add-Member -NotePropertyName $propertyName -NotePropertyValue $value
+                
+            }
+            $output.PSObject.TypeNames.Insert(0, "PSelectRecord")
             $output
         }
     }
@@ -116,27 +122,42 @@ function Field {
         [String]
         $As,
 
-        [Parameter(Position=2)]
+        [Parameter(Position=2,ParameterSetName="Unit")]
         [ValidateSet("Currency","Percentage","Seconds","Minutes","Hours","Days","Weeks","Months","Years")]
         [String]
         $Unit,
 
+        [Parameter(Position=2,ParameterSetName="Format")]
+        [ValidatePattern("{0.*}")]
+        [String]
+        $Format,
+
+        [Parameter(ParameterSetName="Unit")]
+        [Parameter(ParameterSetName="Format")]
         [Parameter(ParameterSetName="Average")]
         [Switch]
         $Average,
 
+        [Parameter(ParameterSetName="Unit")]
+        [Parameter(ParameterSetName="Format")]
         [Parameter(ParameterSetName="Sum")]
         [Switch]
         $Sum,
 
+        [Parameter(ParameterSetName="Unit")]
+        [Parameter(ParameterSetName="Format")]
         [Parameter(ParameterSetName="Minimum")]
         [Switch]
         $Minimum,
 
+        [Parameter(ParameterSetName="Unit")]
+        [Parameter(ParameterSetName="Format")]
         [Parameter(ParameterSetName="Maximum")]
         [Switch]
         $Maximum,
 
+        [Parameter(ParameterSetName="Unit")]
+        [Parameter(ParameterSetName="Format")]
         [Parameter(ParameterSetName="Count")]
         [Switch]
         $Count
@@ -154,6 +175,7 @@ function Field {
 
         if ($PSBoundParameters.ContainsKey("As")) { $field.Add("As", $As) }
         if ($PSBoundParameters.ContainsKey("Unit")) { $field.Add("Unit", $Unit) }
+        if ($PSBoundParameters.ContainsKey("Format")) { $field.Add("Format", $Format) }
 
         if ($Average) { $field.Add("Aggregate", "Average") }
         if ($Sum)     { $field.Add("Aggregate", "Sum") }
