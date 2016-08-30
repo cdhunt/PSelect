@@ -12,7 +12,7 @@
 RootModule = 'PSelect.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.1.0'
+ModuleVersion = '0.2.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -30,7 +30,7 @@ CompanyName = 'Unknown'
 Copyright = '(c) 2016 Chris Hunt. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'A SQL-ish DSL in PowerShell to assist in aggregating collections of data.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''
@@ -95,7 +95,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        # Tags = @()
+        Tags = @('Data','Aggregation')
 
         # A URL to the license for this module.
         # LicenseUri = ''
