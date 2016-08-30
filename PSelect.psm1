@@ -72,21 +72,12 @@ function PSelect {
 
                     switch ($field["Aggregate"])
                     {
-                        'Average' {$value = ($group.Group | Measure-Object -Property $field["Name"] -Average).Average}
-                        'Sum'     {$value = ($group.Group | Measure-Object -Property $field["Name"] -Sum).Sum}
-                        'Minimum' {$value = ($group.Group | Measure-Object -Property $field["Name"] -Minimum).Minimum}
-                        'Maximum' {$value = ($group.Group | Measure-Object -Property $field["Name"] -Maximum).Maximum}
-                        'StdDev' {
-                            $avg = ($group.Group | Measure-Object -Property $field["Name"] -Average).Average
-                            $values = New-Object System.Collections.Generic.List[double]
-                            $null = $group.Group.ForEach({
-                                $f = $field["Name"]
-                                $values.Add($_.$f)
-                            })
-                            $sumOfSquaresOfDifferences = [System.Linq.Enumerable]::Sum([System.Linq.Enumerable]::Select($values, [System.Func[double,double]] {param($val) ($val - $avg) * ($val - $avg)}))
-                            $value = [Math]::Sqrt($sumOfSquaresOfDifferences/$aggregates.Count)
-                        }
-                        Default   {$value = $group.Count}
+                        'Average' { $value = ($group.Group | Measure-Object -Property $field["Name"] -Average).Average }
+                        'Sum'     { $value = ($group.Group | Measure-Object -Property $field["Name"] -Sum).Sum }
+                        'Minimum' { $value = ($group.Group | Measure-Object -Property $field["Name"] -Minimum).Minimum }
+                        'Maximum' { $value = ($group.Group | Measure-Object -Property $field["Name"] -Maximum).Maximum }
+                        'StdDev'  { $value = Get-StandardDeviation ($group.Group | Select-Object -ExpandProperty $field["Name"]) }
+                        Default   { $value = $group.Count }
                     }
                 }
 
@@ -306,4 +297,18 @@ function SortData {
     else {
         Throw "Only one SortData statement is supported."
     }
+}
+
+function Get-StandardDeviation ([double[]]$numbers ) {                                     
+    
+    $avg = $numbers | Measure-Object -Average | Select-Object Count, Average            
+                
+    $popdev = 0            
+                
+    foreach ($number in $numbers){            
+        $popdev +=  [math]::pow(($number - $avg.Average), 2)            
+    }            
+                
+    $sd = [math]::sqrt($popdev / ($avg.Count-1))            
+    return $sd  
 }
