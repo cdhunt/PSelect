@@ -12,7 +12,7 @@
 RootModule = 'PSelect.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.2.0'
+ModuleVersion = '0.2.2'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -98,10 +98,10 @@ PrivateData = @{
         Tags = @('Data','Aggregation')
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/cdhunt/PSelect/blob/master/LICENSE.md'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/cdhunt/PSelect'
 
         # A URL to an icon representing this module.
         # IconUri = ''
