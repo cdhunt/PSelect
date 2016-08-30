@@ -81,6 +81,7 @@ Properties {
         'Tests',
         '.git*',
         '.vscode',
+        '*.csv',
         'Readme.md',
         (Split-Path $PSCommandPath -Leaf)
     )
