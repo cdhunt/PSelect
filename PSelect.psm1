@@ -145,7 +145,6 @@ function Field {
         $Unit,
 
         [Parameter(Position=2,ParameterSetName="Format")]
-        [ValidatePattern("{0.*}")]
         [String]
         $Format,
 
